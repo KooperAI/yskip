@@ -3,39 +3,47 @@
 #include "js_native_api_types.h"
 #include "napi.h"
 
+#include "skipgram.h"
 #include <string>
 
-/**
- * Mostly based at the example at:
- * https://www.lohika.com/node-js-n-api-implementation-and-performance-comparison
- */
-napi_value sayHello(const Napi::CallbackInfo &info) {
+Napi::Object Skipgram::Init(Napi::Env env, Napi::Object exports) {
+    Napi::Function func = DefineClass(env, "Skipgram", {
+        InstanceMethod<&Skipgram::initialize>("initialize"),
+        StaticMethod<&Skipgram::CreateNewItem>("CreateNewItem"),
+    });
+
+    Napi::FunctionReference* constructor = new Napi::FunctionReference();
+
+    *constructor = Napi::Persistent(func);
+    exports.Set("Skipgram", func);
+
+    env.SetInstanceData<Napi::FunctionReference>(constructor);
+
+    return exports;
+}
+
+Skipgram::Skipgram(const Napi::CallbackInfo& info) :
+    Napi::ObjectWrap<Skipgram>(info) {
   Napi::Env env = info.Env();
+  this->_instance = new yskip::Skipgram();
+}
 
-  // Validate argument count and type
-  if (info.Length() != 1) {
-    Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-  if (!info[0].IsString()) {
-    Napi::TypeError::New(env, "Input argument must be a string")
-      .ThrowAsJavaScriptException();
-    return env.Null();
-  }
+Napi::Value Skipgram::initialize(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    yskip::Skipgram::Option option;
+    yskip::Random random;
+    this->_instance->initialize(option, random);
+    return Napi::Boolean::New(env, true);
+}
 
-  // Get input parameter
-  const Napi::String input_string = info[0].As<Napi::String>();
-  std::string result_string = Napi::String::New(env, "");
-  result_string.insert(0, "Hello, ");
-  result_string.append(input_string);
-
-  return Napi::String::New(env, result_string); 
+Napi::Value Skipgram::CreateNewItem(const Napi::CallbackInfo& info) {
+  Napi::FunctionReference* constructor =
+      info.Env().GetInstanceData<Napi::FunctionReference>();
+  return constructor->New({});
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set(
-      Napi::String::New(env, "sayHello"),
-      Napi::Function::New(env, sayHello));
+  Skipgram::Init(env, exports);
   return exports;
 }
 

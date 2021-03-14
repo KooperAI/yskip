@@ -3,5 +3,21 @@
 #include <napi.h>
 #include <node_api.h>
 
-napi_value SayHello(const Napi::CallbackInfo &info);
+#include "skipgram.h"
+
 Napi::Object Init(Napi::Env env, Napi::Object exports);
+
+/**
+ * Skipgram wrapper for NodeJS
+ */
+class Skipgram : public Napi::ObjectWrap<Skipgram> {
+  public:
+    static Napi::Object Init(Napi::Env env, Napi::Object exports);
+    Skipgram(const Napi::CallbackInfo& info);
+    static Napi::Value CreateNewItem(const Napi::CallbackInfo& info);
+
+  private:
+    Napi::Value initialize(const Napi::CallbackInfo& info);
+    yskip::Skipgram *_instance;
+};
+
