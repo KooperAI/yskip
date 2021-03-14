@@ -458,7 +458,7 @@ inline int Skipgram::load_text(const char* filename) {
   uint64_t count;
   while (fgets(line, BUFF_SIZE, is) != NULL) {
     line[strlen(line)-1] = '\0';
-    if (sscanf(line, "%s %lld %[^\t] %[^\t] %[^\t] %[^\t]", word, &count, s1, s2, s3, s4) != 6) {
+    if (sscanf(line, "%s %lu %[^\t] %[^\t] %[^\t] %[^\t]", word, &count, s1, s2, s3, s4) != 6) {
       std::fprintf(stderr, HERE "invalid format (%s): %s\n", filename, line);
       return FAILURE;
     }
@@ -517,7 +517,7 @@ inline int Skipgram::save_text(const char* filename) const {
   std::vector<std::string> words = vocab_.all();
   for (int index = 0; index < words.size(); ++index) {
     std::fprintf(os, "%s", words[index].c_str());
-    std::fprintf(os, "\t%lld", counts_[index]);
+    std::fprintf(os, "\t%lu", counts_[index]);
     for (int i = 0; i < vec_size_; ++i) {
       if (i == 0) {
     	std::fprintf(os, "\t%lf", vec_.input[index][i]);

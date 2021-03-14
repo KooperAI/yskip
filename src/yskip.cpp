@@ -195,14 +195,15 @@ inline void print_speed(const timeval start_time, const uint64_t progress, const
   timeval current_time;
   gettimeofday(&current_time, NULL);
   double elapsed = interval(start_time, current_time);
-  std::fprintf(stderr, "\rspeed: %.2fk (%d %ss/%.2f sec)", static_cast<real_t>(progress)/1000.0/elapsed, progress, unit, elapsed);
+  std::fprintf(stderr, "\rspeed: %.2fk (%lu %ss/%.2f sec)", static_cast<real_t>(progress)/1000.0/elapsed, progress, unit, elapsed);
 }
 
 
 inline void asyc_sgd2(Skipgram& skipgram, const int start, const int end, const std::vector<std::vector<std::string>>& mini_batch, Random& random) {
 
   real_t* grad;
-  posix_memalign((void**)&grad, 128, sizeof(real_t)*skipgram.vec_size());
+  assert(!posix_memalign((void**)&grad, 128,
+        sizeof(real_t)*skipgram.vec_size()));
   for (int i = start; i < end; ++i) {
     skipgram.train(mini_batch[i], false, grad, random);
   }
@@ -250,7 +251,7 @@ inline int train_batch(Skipgram& skipgram, const Configuration& config, Random& 
   
   //
   if (config.verbose) {
-    std::fprintf(stderr, " done (vocab size=%ld)\n", skipgram.vocab().size());
+    std::fprintf(stderr, " done (vocab size=%u)\n", skipgram.vocab().size());
     std::fprintf(stderr, "Training batch SGNS\n");
   }
 
@@ -310,7 +311,8 @@ inline int train_incremental(Skipgram& skipgram, const Configuration& config, Ra
   //
   time_t start_time = time(NULL);
   real_t* grad;
-  posix_memalign((void**)&grad, 128, sizeof(real_t)*skipgram.vec_size());
+  assert(!posix_memalign((void**)&grad, 128,
+        sizeof(real_t)*skipgram.vec_size()));
   count_t sent_num = 0;
   char line[BUFF_SIZE];
   while (fgets(line, BUFF_SIZE, is) != NULL) {
