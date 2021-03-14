@@ -4,11 +4,12 @@
 #include "napi.h"
 
 #include "skipgram.h"
+#include "random.h"
 #include <string>
 
 Napi::Object Skipgram::Init(Napi::Env env, Napi::Object exports) {
     Napi::Function func = DefineClass(env, "Skipgram", {
-        InstanceMethod<&Skipgram::initialize>("initialize"),
+        InstanceMethod<&Skipgram::testMethod>("testMethod"),
         StaticMethod<&Skipgram::CreateNewItem>("CreateNewItem"),
     });
 
@@ -28,11 +29,11 @@ Skipgram::Skipgram(const Napi::CallbackInfo& info) :
   this->_instance = new yskip::Skipgram();
 }
 
-Napi::Value Skipgram::initialize(const Napi::CallbackInfo& info) {
+/**
+ * Just a test method that returns true when invoked
+ */
+Napi::Value Skipgram::testMethod(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
-    yskip::Skipgram::Option option;
-    yskip::Random random;
-    this->_instance->initialize(option, random);
     return Napi::Boolean::New(env, true);
 }
 

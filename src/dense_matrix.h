@@ -33,7 +33,7 @@ class DenseMatrix {
  private:
   int     row_num_;
   int     col_num_;
-  real_t* data_;
+  real_t* data_ = nullptr;
 };
 
 
@@ -41,8 +41,9 @@ inline DenseMatrix::DenseMatrix() {
 
   row_num_ = 1;
   col_num_ = 1;
-  assert(!posix_memalign((void**)&data_, 128,
-        sizeof(real_t)*row_num_*col_num_));
+  int result = posix_memalign((void**)&data_, 128,
+        sizeof(real_t)*row_num_*col_num_);
+  assert(result == 0);
   std::fill(data_, data_ + row_num_*col_num_, 0.0);
 }
 
@@ -56,8 +57,9 @@ inline DenseMatrix::DenseMatrix(const int row_num, const int col_num, const real
   
   row_num_ = row_num;
   col_num_ = col_num;
-  assert(!posix_memalign((void**)&data_, 128,
-        sizeof(real_t)*row_num_*col_num_));
+  int result = posix_memalign((void**)&data_, 128,
+        sizeof(real_t)*row_num_*col_num_);
+  assert(result == 0);
   std::fill(data_, data_ + row_num_*col_num_, val);
 }
 
@@ -66,8 +68,9 @@ inline DenseMatrix::DenseMatrix(const DenseMatrix& other) {
 
   row_num_ = other.row_num();
   col_num_ = other.col_num();
-  assert(!posix_memalign((void**)&data_, 128,
-        sizeof(real_t)*row_num_*col_num_));
+  int result = posix_memalign((void**)&data_, 128,
+        sizeof(real_t)*row_num_*col_num_);
+  assert(result == 0);
   for (int i = 0; i < row_num_; ++i) {
     std::copy(other[i], other[i] + col_num_, data_+col_num_*i);
   }
@@ -86,8 +89,9 @@ inline DenseMatrix& DenseMatrix::operator=(const DenseMatrix& other) {
     row_num_ = other.row_num();
     col_num_ = other.col_num();
     free(data_);
-    assert(!posix_memalign((void**)&data_, 128,
-          sizeof(real_t)*row_num_*col_num_));
+    int result = posix_memalign((void**)&data_, 128,
+          sizeof(real_t)*row_num_*col_num_);
+    assert(result == 0);
     for (int i = 0; i < row_num_; ++i) {
       std::copy(other[i], other[i] + col_num_, data_+col_num_*i);
     }
@@ -141,8 +145,9 @@ inline int DenseMatrix::load(FILE* is) {
     return FAILURE;
   }
   free(data_);
-  assert(!posix_memalign((void**)&data_, 128,
-        sizeof(real_t)*row_num_*col_num_));
+  int result = posix_memalign((void**)&data_, 128,
+        sizeof(real_t)*row_num_*col_num_);
+  assert(result == 0);
   if (fread(data_, sizeof(real_t), static_cast<size_t>(row_num_*col_num_), is) != static_cast<size_t>(row_num_*col_num_)) {
     return FAILURE;
   }

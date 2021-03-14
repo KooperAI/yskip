@@ -17,7 +17,7 @@ class Skipgram : public Napi::ObjectWrap<Skipgram> {
     static Napi::Value CreateNewItem(const Napi::CallbackInfo& info);
 
   private:
-    Napi::Value initialize(const Napi::CallbackInfo& info);
+    Napi::Value testMethod(const Napi::CallbackInfo& info);
     yskip::Skipgram *_instance;
 };
 

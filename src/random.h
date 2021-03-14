@@ -20,7 +20,7 @@ class Random {
   template<class T> int round(const T x);
   
  private:
-  DISALLOW_COPY_AND_ASSIGN(Random);
+  //DISALLOW_COPY_AND_ASSIGN(Random);
   std::mt19937 mt_;
 };
 

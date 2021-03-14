@@ -202,8 +202,9 @@ inline void print_speed(const timeval start_time, const uint64_t progress, const
 inline void asyc_sgd2(Skipgram& skipgram, const int start, const int end, const std::vector<std::vector<std::string>>& mini_batch, Random& random) {
 
   real_t* grad;
-  assert(!posix_memalign((void**)&grad, 128,
-        sizeof(real_t)*skipgram.vec_size()));
+  int result = posix_memalign((void**)&grad, 128,
+        sizeof(real_t)*skipgram.vec_size());
+  assert(result == 0);
   for (int i = start; i < end; ++i) {
     skipgram.train(mini_batch[i], false, grad, random);
   }
@@ -311,8 +312,9 @@ inline int train_incremental(Skipgram& skipgram, const Configuration& config, Ra
   //
   time_t start_time = time(NULL);
   real_t* grad;
-  assert(!posix_memalign((void**)&grad, 128,
-        sizeof(real_t)*skipgram.vec_size()));
+  int result = posix_memalign((void**)&grad, 128,
+        sizeof(real_t)*skipgram.vec_size());
+  assert(result == 0);
   count_t sent_num = 0;
   char line[BUFF_SIZE];
   while (fgets(line, BUFF_SIZE, is) != NULL) {

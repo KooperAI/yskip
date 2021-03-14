@@ -136,7 +136,6 @@ inline Skipgram::Option::Option() {
 
 
 inline Skipgram::Skipgram() {
-
   Option option;
   Random random;
   this->initialize(option, random);
