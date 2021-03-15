@@ -13,6 +13,7 @@
 Napi::Object Skipgram::Init(Napi::Env env, Napi::Object exports) {
     Napi::Function func = DefineClass(env, "Skipgram", {
         InstanceMethod<&Skipgram::testMethod>("testMethod"),
+        InstanceAccessor<&Skipgram::getAlpha>("alpha"),
         StaticMethod<&Skipgram::CreateNewItem>("CreateNewItem"),
     });
 
@@ -27,12 +28,32 @@ Napi::Object Skipgram::Init(Napi::Env env, Napi::Object exports) {
 }
 
 /**
+ * Returns the current instance alpha value from its options.
+ */
+Napi::Value Skipgram::getAlpha(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  float alpha_value = this->_instance->alpha();
+  return Napi::Number::New(env, alpha_value);
+}
+
+/**
  * Constructor for the class
  */
 Skipgram::Skipgram(const Napi::CallbackInfo& info) :
     Napi::ObjectWrap<Skipgram>(info) {
   Napi::Env env = info.Env();
-  this->_instance = new yskip::Skipgram();
+  if (info.Length() == 0) 
+    this->_instance = new yskip::Skipgram();
+  else {
+    if (info[0].IsNumber()) {
+      float alpha_value = info[0].As<Napi::Number>().FloatValue();
+      auto options = yskip::Skipgram::Option();
+      options.alpha = alpha_value;
+      this->_instance = new yskip::Skipgram(options);
+    } else {
+      Napi::TypeError::New(env, "Numberexpected").ThrowAsJavaScriptException();
+    }
+  }
 }
 
 /**
