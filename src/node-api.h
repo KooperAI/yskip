@@ -7,6 +7,7 @@
 
 Napi::Object Init(Napi::Env env, Napi::Object exports);
 
+Napi::Value mainMethod(const Napi::CallbackInfo &info);
 /**
  * Skipgram wrapper for NodeJS
  */

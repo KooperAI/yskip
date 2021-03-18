@@ -19,6 +19,7 @@
 #include "fast_sigmoid.h"
 #include "unigram_table.h"
 
+int cmdline_parse(int argc, char **argv);
 
 namespace yskip {
 

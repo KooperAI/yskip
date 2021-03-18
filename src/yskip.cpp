@@ -387,7 +387,7 @@ inline int train_mini_batch(Skipgram& skipgram, const Configuration& config, Ran
 }
 
 
-int main(int argc, char **argv) {
+int cmdline_parse(int argc, char **argv) {
 
   /*
    * parse arguments
